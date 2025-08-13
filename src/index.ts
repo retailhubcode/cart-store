@@ -49,14 +49,21 @@ function createCommerceServiceCart() {
           utmParams: utmParams,
         });
         return response as { success: boolean; data: any } | undefined; */
-        fetch(`${window.location.host}/api/add-cart-items`, {
+        fetch(`${window.location.origin}/api/add-cart-items`, {
           cache: "no-store",
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-        });
+        })
+          .then((res) => res.json())
+          .then((result) => {
+            console.log("Resultado:", result);
+          })
+          .catch((err) => {
+            console.error("Erro no fetch:", err);
+          });
 
         console.log("foi o fetch");
 
