@@ -14,5 +14,9 @@
   "devDependencies": {
     "esbuild": "^0.18.18",
     "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@nanostores/react": "^1.0.0",
+    "nanostores": "^1.0.1"
   }
 }

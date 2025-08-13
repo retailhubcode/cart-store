@@ -1,9 +1,5 @@
-import { useStore } from "@nanostores/react";
-import { computed, map } from "nanostores";
-
-import { $commerceServiceCart } from "./commerce-service-cart";
-import { CartItemType } from "../use-cart";
-import { $uiStore } from "../../ui/store/ui-store";
+import { useStore } from "../node_modules/@nanostores/react/index";
+import { computed, map } from "../node_modules/nanostores/index";
 
 function createCartStore() {
   const $remoteState = map({
@@ -39,13 +35,6 @@ function createCartStore() {
       total: items.reduce((acc, curr) => acc + curr.price * curr.quantity, 0),
     };
   });
-
-  const openCart = () => {
-    $uiStore.set({
-      ...$uiStore.get(),
-      isCartOpen: true,
-    });
-  };
 
   return {
     instance: $store,
