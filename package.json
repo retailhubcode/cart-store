@@ -8,7 +8,7 @@
     "url": "git+https://github.com/retailhubcode/cart-store.git"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --format=esm --target=esnext --outfile=dist/index.js --sourcemap",
+    "build": "esbuild src/index.ts --bundle --format=esm --target=esnext --platform=browser --jsx=automatic --define:process.env.NODE_ENV='\"production\"' --define:process.env.NEXT_PUBLIC_IS_CMS='false' --minify=false --outfile=dist/index.js --sourcemap",
     "prepare": "npm run build"
   },
   "devDependencies": {
