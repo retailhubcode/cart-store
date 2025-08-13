@@ -1,0 +1,18 @@
+{
+  "name": "@shared-libs/cart-store",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/retailhubcode/cart-store.git"
+  },
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --format=esm --target=esnext --outfile=dist/index.js --sourcemap",
+    "prepare": "npm run build"
+  },
+  "devDependencies": {
+    "esbuild": "^0.18.18",
+    "typescript": "^5.2.2"
+  }
+}
