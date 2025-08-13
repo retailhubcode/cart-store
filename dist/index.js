@@ -490,6 +490,165 @@ var require_react = __commonJS({
   }
 });
 
+// node_modules/cookie/dist/index.js
+var require_dist = __commonJS({
+  "node_modules/cookie/dist/index.js"(exports) {
+    "use strict";
+    Object.defineProperty(exports, "__esModule", { value: true });
+    exports.parse = parse2;
+    exports.serialize = serialize;
+    var cookieNameRegExp = /^[\u0021-\u003A\u003C\u003E-\u007E]+$/;
+    var cookieValueRegExp = /^[\u0021-\u003A\u003C-\u007E]*$/;
+    var domainValueRegExp = /^([.]?[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)([.][a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$/i;
+    var pathValueRegExp = /^[\u0020-\u003A\u003D-\u007E]*$/;
+    var __toString = Object.prototype.toString;
+    var NullObject = /* @__PURE__ */ (() => {
+      const C = function() {
+      };
+      C.prototype = /* @__PURE__ */ Object.create(null);
+      return C;
+    })();
+    function parse2(str, options) {
+      const obj = new NullObject();
+      const len = str.length;
+      if (len < 2)
+        return obj;
+      const dec = options?.decode || decode;
+      let index = 0;
+      do {
+        const eqIdx = str.indexOf("=", index);
+        if (eqIdx === -1)
+          break;
+        const colonIdx = str.indexOf(";", index);
+        const endIdx = colonIdx === -1 ? len : colonIdx;
+        if (eqIdx > endIdx) {
+          index = str.lastIndexOf(";", eqIdx - 1) + 1;
+          continue;
+        }
+        const keyStartIdx = startIndex(str, index, eqIdx);
+        const keyEndIdx = endIndex(str, eqIdx, keyStartIdx);
+        const key = str.slice(keyStartIdx, keyEndIdx);
+        if (obj[key] === void 0) {
+          let valStartIdx = startIndex(str, eqIdx + 1, endIdx);
+          let valEndIdx = endIndex(str, endIdx, valStartIdx);
+          const value = dec(str.slice(valStartIdx, valEndIdx));
+          obj[key] = value;
+        }
+        index = endIdx + 1;
+      } while (index < len);
+      return obj;
+    }
+    function startIndex(str, index, max) {
+      do {
+        const code = str.charCodeAt(index);
+        if (code !== 32 && code !== 9)
+          return index;
+      } while (++index < max);
+      return max;
+    }
+    function endIndex(str, index, min) {
+      while (index > min) {
+        const code = str.charCodeAt(--index);
+        if (code !== 32 && code !== 9)
+          return index + 1;
+      }
+      return min;
+    }
+    function serialize(name, val, options) {
+      const enc = options?.encode || encodeURIComponent;
+      if (!cookieNameRegExp.test(name)) {
+        throw new TypeError(`argument name is invalid: ${name}`);
+      }
+      const value = enc(val);
+      if (!cookieValueRegExp.test(value)) {
+        throw new TypeError(`argument val is invalid: ${val}`);
+      }
+      let str = name + "=" + value;
+      if (!options)
+        return str;
+      if (options.maxAge !== void 0) {
+        if (!Number.isInteger(options.maxAge)) {
+          throw new TypeError(`option maxAge is invalid: ${options.maxAge}`);
+        }
+        str += "; Max-Age=" + options.maxAge;
+      }
+      if (options.domain) {
+        if (!domainValueRegExp.test(options.domain)) {
+          throw new TypeError(`option domain is invalid: ${options.domain}`);
+        }
+        str += "; Domain=" + options.domain;
+      }
+      if (options.path) {
+        if (!pathValueRegExp.test(options.path)) {
+          throw new TypeError(`option path is invalid: ${options.path}`);
+        }
+        str += "; Path=" + options.path;
+      }
+      if (options.expires) {
+        if (!isDate(options.expires) || !Number.isFinite(options.expires.valueOf())) {
+          throw new TypeError(`option expires is invalid: ${options.expires}`);
+        }
+        str += "; Expires=" + options.expires.toUTCString();
+      }
+      if (options.httpOnly) {
+        str += "; HttpOnly";
+      }
+      if (options.secure) {
+        str += "; Secure";
+      }
+      if (options.partitioned) {
+        str += "; Partitioned";
+      }
+      if (options.priority) {
+        const priority = typeof options.priority === "string" ? options.priority.toLowerCase() : void 0;
+        switch (priority) {
+          case "low":
+            str += "; Priority=Low";
+            break;
+          case "medium":
+            str += "; Priority=Medium";
+            break;
+          case "high":
+            str += "; Priority=High";
+            break;
+          default:
+            throw new TypeError(`option priority is invalid: ${options.priority}`);
+        }
+      }
+      if (options.sameSite) {
+        const sameSite = typeof options.sameSite === "string" ? options.sameSite.toLowerCase() : options.sameSite;
+        switch (sameSite) {
+          case true:
+          case "strict":
+            str += "; SameSite=Strict";
+            break;
+          case "lax":
+            str += "; SameSite=Lax";
+            break;
+          case "none":
+            str += "; SameSite=None";
+            break;
+          default:
+            throw new TypeError(`option sameSite is invalid: ${options.sameSite}`);
+        }
+      }
+      return str;
+    }
+    function decode(str) {
+      if (str.indexOf("%") === -1)
+        return str;
+      try {
+        return decodeURIComponent(str);
+      } catch (e) {
+        return str;
+      }
+    }
+    function isDate(val) {
+      return __toString.call(val) === "[object Date]";
+    }
+  }
+});
+
 // node_modules/nanostores/atom/index.js
 var listenerQueue = [];
 var lqIndex = 0;
@@ -740,7 +899,132 @@ function useStore(store, { keys, deps = [store, keys] } = {}) {
   return (0, import_react.useSyncExternalStore)(subscribe, get, get);
 }
 
+// src/sdk/cart-cookies.ts
+var import_dist = __toESM(require_dist());
+
+// src/utils/get-document.ts
+var getDocument = () => globalThis.cmsEditorDocument ?? globalThis.document;
+
+// src/sdk/cart-cookies.ts
+var CART_COOKIE_IDENTIFIER = "cart";
+var VTEX_CART_COOKIE_IDENTIFIER = "checkout.vtex.com";
+function getCookiesOnClient() {
+  if (typeof window === "undefined")
+    return {};
+  return (0, import_dist.parse)(document.cookie);
+}
+function getCookiesOnServer(cookieHeader) {
+  if (!cookieHeader)
+    return {};
+  return (0, import_dist.parse)(cookieHeader);
+}
+async function getCookiesUniversal(cookieHeader) {
+  if (typeof window === "undefined") {
+    return getCookiesOnServer(cookieHeader);
+  } else {
+    return getCookiesOnClient();
+  }
+}
+var getCartCookieIdentifier = (platform) => {
+  let platformValue = platform;
+  if (!platformValue && typeof window !== "undefined") {
+    platformValue = getDocument().querySelector("html")?.getAttribute("site-platform") ?? "";
+  }
+  switch (platformValue) {
+    case "vtex":
+      return VTEX_CART_COOKIE_IDENTIFIER;
+    default:
+      return CART_COOKIE_IDENTIFIER;
+  }
+};
+var getCartCookieValueUniversal = async (platform) => {
+  const cartIdentifier = getCartCookieIdentifier(platform);
+  const cookies = await getCookiesUniversal();
+  const cartIdentifierValue = cookies[cartIdentifier] ?? "";
+  switch (cartIdentifier) {
+    case VTEX_CART_COOKIE_IDENTIFIER:
+      const cartId = cartIdentifierValue?.replace("__ofid=", "");
+      return cartId;
+    default:
+      return cartIdentifierValue;
+  }
+};
+
+// src/utils/get-utm-params.ts
+var getWindow = () => globalThis.cmsEditorWindow ?? globalThis.window;
+var utmKeysSet = /* @__PURE__ */ new Set([
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+  "utm_term",
+  "utm_content",
+  "utmipage",
+  "utmi_part",
+  "utmi_campaign"
+]);
+var getSearchParams = () => {
+  const searchParams = new URLSearchParams(getWindow().location.search);
+  const paramsObject = {};
+  for (const [key, value] of Array.from(searchParams.entries())) {
+    paramsObject[key] = value;
+  }
+  return paramsObject;
+};
+var getUTMParams = (params) => {
+  if (typeof window === "undefined")
+    return {};
+  const searchParams = params ?? getSearchParams();
+  const utmParams = {};
+  for (const [key, value] of Object.entries(searchParams)) {
+    if (utmKeysSet.has(key)) {
+      utmParams[key] = value;
+    }
+  }
+  return utmParams;
+};
+
 // src/index.ts
+function createCommerceServiceCart() {
+  const utmParams = getUTMParams();
+  return {
+    action: {
+      removeItems: async (itemsToRemove) => {
+        const cart = $cart?.get() || {};
+        return {
+          success: false,
+          data: {}
+        };
+      },
+      updateItems: async (itemsToUpdate) => {
+        return {
+          success: false,
+          data: {}
+        };
+      },
+      addItems: async (props) => {
+        const data = {
+          cartId: await getCartCookieValueUniversal(),
+          items: props.items,
+          utmParams
+        };
+        fetch(`${window.location.host}/api/add-cart-items`, {
+          cache: "no-store",
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+        console.log("foi o fetch");
+        return {
+          success: false,
+          data: {}
+        };
+      }
+    }
+  };
+}
+var $commerceServiceCart = createCommerceServiceCart();
 function createCartStore() {
   const $remoteState = map({
     items: [],
@@ -788,6 +1072,16 @@ function createCartStore() {
        * @returns Promise com o resultado da remoção
        */
       removeSku: async (itemsToRemove) => {
+        try {
+          const response = await $commerceServiceCart.action.removeItems(
+            itemsToRemove
+          );
+          if (response?.success) {
+            $remoteState.set(response.data);
+          }
+        } catch (error) {
+          console.error("Error removing item from cart:", error);
+        }
       },
       /**
        * atualiza skus do carrinho, como quantidade de itens
@@ -796,6 +1090,14 @@ function createCartStore() {
        * @returns Promise com o resultado da atualização
        */
       updatedSku: async (itemsToUpdate) => {
+        try {
+          const response = await $commerceServiceCart.action.updateItems(
+            itemsToUpdate
+          );
+          const { success, data } = response ?? {};
+        } catch (error) {
+          console.error("Error adding item to cart:", error);
+        }
       },
       /**
        * adiciona um novo skus ao carrinho
@@ -805,7 +1107,15 @@ function createCartStore() {
        */
       addItems: async (itemsToAdd) => {
         const updated = itemsToAdd;
-        console.log("Adding items to cart:", updated);
+        console.log("lalala", updated);
+        try {
+          const response = await $commerceServiceCart.action.addItems({
+            items: updated
+          });
+          const { success, data } = response ?? {};
+        } catch (error) {
+          console.error("Error adding item to cart:", error);
+        }
       }
     }
   };
@@ -815,9 +1125,13 @@ if (typeof window !== "undefined") {
   window.RetailHub = window.RetailHub || {};
   window.RetailHub.states = window.RetailHub.states || {};
   window.RetailHub.states.$cart = $cart;
+  window.RetailHub = window.RetailHub || {};
+  window.RetailHub.states = window.RetailHub.states || {};
+  window.RetailHub.states.$commerceServiceCart = $commerceServiceCart;
 }
 export {
-  $cart
+  $cart,
+  $commerceServiceCart
 };
 /*! Bundled license information:
 

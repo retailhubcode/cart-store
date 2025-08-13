@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@nanostores/react": "^1.0.0",
+    "cookie": "^1.0.2",
     "nanostores": "^1.0.1"
   }
 }
